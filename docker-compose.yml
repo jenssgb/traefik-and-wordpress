@@ -1,0 +1,66 @@
+version: "3.3"
+
+services:
+
+  traefik:
+    image: "traefik:v2.9"
+    container_name: "traefik"
+    restart: always
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=<<<<< PLEASE ADD >>>>>>"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - homepage   
+
+  wordpress:
+    image: wordpress
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: <<<<< PLEASE ADD >>>>>> 
+      WORDPRESS_DB_PASSWORD: <<<<< PLEASE ADD >>>>>> 
+      WORDPRESS_DB_NAME: <<<<< PLEASE ADD >>>>>> 
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`<<<<< PLEASE ADD YOUR DOMAIN>>>>>>`)"
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
+    volumes:
+      - wordpress:/var/www/html
+    networks:
+      - homepage   
+      - db-network
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: <<<<< PLEASE ADD >>>>>> 
+      MYSQL_USER: <<<<< PLEASE ADD >>>>>> 
+      MYSQL_PASSWORD: <<<<< PLEASE ADD >>>>>> 
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - db-network
+
+volumes:
+  wordpress:
+  db:
+
+networks:
+  homepage:
+  db-network:
