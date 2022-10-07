@@ -11,12 +11,14 @@ services:
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--certificatesresolvers.myresolver.acme.email=<<<<< PLEASE ADD >>>>>>"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
+      - "80:80"
       - "443:443"
       - "8080:8080"
     volumes:
@@ -34,10 +36,21 @@ services:
       WORDPRESS_DB_PASSWORD: <<<<< PLEASE ADD >>>>>> 
       WORDPRESS_DB_NAME: <<<<< PLEASE ADD >>>>>> 
     labels:
+      # The labels are usefull for Traefik only
       - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`<<<<< PLEASE ADD YOUR DOMAIN>>>>>>`)"
-      - "traefik.http.routers.whoami.entrypoints=websecure"
-      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
+      - "traefik.docker.network=homepage"
+      # Get the routes from http
+      - "traefik.http.routers.wordpress.rule=Host(`<< ADD YOUR DOMAIN >>`)"
+      - "traefik.http.routers.wordpress.entrypoints=web"
+      # Redirect these routes to https
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.wordpress.middlewares=redirect-to-https@docker"
+      # Get the routes from https
+      - "traefik.http.routers.wordpress-secured.rule=Host(`<< ADD YOUR DOMAIN >>`)"
+      - "traefik.http.routers.wordpress-secured.entrypoints=websecure"
+      # Apply autentificiation with http challenge
+      - "traefik.http.routers.wordpress-secured.tls=true"
+      - "traefik.http.routers.wordpress-secured.tls.certresolver=myhttpchallenge"
     volumes:
       - wordpress:/var/www/html
     networks:
