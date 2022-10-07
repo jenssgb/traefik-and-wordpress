@@ -24,7 +24,7 @@ A simple compose script wich will allow you to run traefik and wordpress with My
 
 Traefik Container:
 
-      - "--certificatesresolvers.myresolver.acme.email=<<<<< PLEASE ADD >>>>>>"
+      - "--certificatesresolvers.myresolver.acme.email=<<< PLEASE ADD YOUR E-MAIL ADRESS >>>"
 
 
 Wordpress Container:
@@ -33,7 +33,8 @@ Wordpress Container:
       WORDPRESS_DB_PASSWORD: <<<<< PLEASE ADD >>>>>> 
       WORDPRESS_DB_NAME: <<<<< PLEASE ADD >>>>>> 
       
-      - "traefik.http.routers.whoami.rule=Host(`<<<<< PLEASE ADD YOUR DOMAIN>>>>>>`)"
+      - "traefik.http.routers.wordpress.rule=Host(`<<< PLEASE ADD >>>`)"
+      - "traefik.http.routers.wordpress-secured.rule=Host(`<<< PLEASE ADD >>>`)"
       
 Database Container:
 
