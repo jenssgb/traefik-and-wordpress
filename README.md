@@ -8,7 +8,7 @@ A simple compose script wich will allow you to run traefik and wordpress with My
 # How to use:
 - Register a domain 
 - Add the IP Adress of your Linux Server to the Domain DNS A-Record
-- Open Port 443 (HTTPS) & 8080 (Traefig UI) to your Server inbound
+- Open Port 80 (HTTP) 443 (HTTPS) & 8080 (Traefig UI) to your Server inbound
 - Clone the Code to your Linux Server 
 - Check if docker and docker compose is installed 
 - Change the strings (See below) 
