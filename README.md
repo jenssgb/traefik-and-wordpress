@@ -1,6 +1,10 @@
 # Traefik and Wordpress
 A simple compose script wich will allow you to run traefik and wordpress with MySQL and docker.
 
+# Please note
+- This is for lab and testing purposes only.
+- For safety reasons it is absolutely necessary to deal with all elements in detail.  
+
 # How to use:
 - Register a domain 
 - Add the IP Adress of your Linux Server to the Domain DNS A-Record
